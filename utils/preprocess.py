@@ -1,6 +1,9 @@
+import numpy as np
+np.random.seed(42)
+
 import pandas as pd
 import sklearn
-import numpy as np
+
 import pubmed_parser as pp
 import pickle
 import traceback
@@ -8,11 +11,9 @@ from morph import flatten
 from nltk.corpus import stopwords
 
 from sklearn.feature_selection import SelectPercentile, chi2
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA, TruncatedSVD
 from sklearn.feature_extraction.text import TfidfVectorizer
-
-from sklearn.base import TransformerMixin
-from sklearn.base import BaseEstimator
+from sklearn.preprocessing import StandardScaler
 
 from utils.transformers import TokenizePreprocessor, sentence_tokenize, vectorizer
 
@@ -61,22 +62,23 @@ class preprocess_text():
         # dummy tokenizer, used when we have pretokenized tekst as it returns the tokenized document(s)
         if stop_words:
             doc = [w for w in doc if not w in self.stop_words]
-        print(doc)
+        #print(doc)
         return doc
 
     def transform_text(self,
-                         trainData,
-                         trainLabels,
-                         ngramRange=(2,4),
-                         max_df_freq=1.0,
-                         analyzerLevel='word',
-                         feature_selector=None):
+                        trainData,
+                        trainLabels,
+                        ngramRange=(1,1),
+                        max_df_freq=0.9,
+                        analyzerLevel='word',
+                        feature_selector='chi2',
+                        standard_scaler=False):
 
         transformed_text = None
         selector = None
         tfidf_vect = None
 
-        if feature_selector not in ['pca', 'chi2', None]:
+        if feature_selector not in ['tsvd', 'chi2', None]:
             raise ValueError("feature_selector must be one of {}".format(['pca','chi2',None]))
 
         if feature_selector:
@@ -97,10 +99,19 @@ class preprocess_text():
                                     preprocessor=self.dummy_tokenizer)
 
         transformed_text = tfidf_vect.fit_transform(trainData)
+        # print(transformed_text.shape)
 
-        if feature_selector:
-            selector = SelectPercentile(chi2, 30)
+        if feature_selector == 'chi2':
+            selector = SelectPercentile(chi2, 15)
             transformed_text = selector.fit_transform(transformed_text, trainLabels)
+
+        if feature_selector == 'tsvd':
+            selector = TruncatedSVD(n_components=100, n_iter=100)
+            transformed_text = selector.fit_transform(transformed_text)
+
+        if standard_scaler:
+            scaler = StandardScaler(with_mean=False)
+            transformed_text = scaler.fit_transform(transformed_text)
 
         print('Transformed train data set feature space size:\t {}'.format(transformed_text.shape))
         return transformed_text, tfidf_vect, selector
