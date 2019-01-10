@@ -137,9 +137,9 @@ def map_regex_concepts(token):
 
 regex_concept_dict = [
     # biomedical
-    (re.compile("\w+inib$"), "_chemical_"),
-    (re.compile("\w+[ui]mab$"), "_chemical_"),
-    (re.compile("->|-->"), "_replacement_"),
+    # (re.compile("\w+inib$"), "_chemical_"),
+    # (re.compile("\w+[ui]mab$"), "_chemical_"),
+    # (re.compile("->|-->"), "_replacement_"),
     # (re.compile("^(PFS|pfs)$"), "progression-free survival"),
 
     # number-related concepts
@@ -155,8 +155,8 @@ regex_concept_dict = [
                 "(\d+m|cm|mm|um|nm)|"
                 "(\d+l|ml|cl|ul|mol|mmol|nmol|mumol|mo))/?)+$"), "_unit_"),
     # abbreviation starting with letters and containing nums
-    (re.compile("^[Rr][Ss]\d+$|"
-                "^[Rr]\d+[A-Za-z]$"), "_mutation_"),
+    # (re.compile("^[Rr][Ss]\d+$|"
+    #            "^[Rr]\d+[A-Za-z]$"), "_mutation_"),
     # (re.compile("^[a-zA-Z]\w*-?\w*\d+\w*$"), "_abbrev_"),
     # time
     (re.compile("^([jJ]an\.(uary)?|[fF]eb\.(ruary)?|[mM]ar\.(ch)?|"
@@ -182,7 +182,6 @@ regex_concept_dict = [
     (re.compile("^[Ii]\.?[Vv]\.?$"), "iv"),
     (re.compile("^[Pp]\.?[Oo]\.?$"), "po")
 ]
-
 
 def prenormalize(text):
     """normalize common abbreviations and symbols known to mess with sentence boundary disambiguation"""
