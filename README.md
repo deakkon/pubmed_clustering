@@ -23,7 +23,7 @@ Installation steps:
 
 3. run the code:
 
-    a. python main.py -m train
+    a. python main.py -m train -k N
             
          Executves input feature space xploration, traines and serializes seperate HDBSCAN and KMeans for individual input components:     ['title'],
                                  ['abstract'],
@@ -40,24 +40,26 @@ Installation steps:
             III. Clustring results, obtained by applying the best perfroming combinations for both HDBSCAN and K-Means, available in report/cluster_reports/clusters_ground_truth_HDBSCAN.tsv and report/cluster_reports/clusters_ground_truth_KMEANS.tsv.
             IV. Serialized models, available in prepared/utils. Models are serialized with sklearn.external.joblib.
             
-            Additionally, analysis reports for the two evaluated clustering algorithms are shown on the screen, including HS and AMI values, top k (k==10 by default) words per cluster and Cluster ID with PMIDs in individual cluster. 
+            Additionally, analysis reports for the two evaluated clustering algorithms are shown on the screen, including HS and AMI values, top N words per cluster and Cluster ID with PMIDs in individual cluster. N==10 by default.  
             
-    b. python main.py -m test  
+    b. python main.py -m test -k N
     
         Executes inference on the test set (i.e. unlabeled ground truth) with the best perfomring HDBSCAN and K-Means algorthms. ['title', 'abstract', 'NE'] is used as the default input component. 
         
         After inference, the results (same format and content as above) are available in report/cluster_reports/clusters_test_set_HDBSCAN.tsv and report/cluster_reports/clusters_test_set_KMEANS.tsv.
         
-        Additionally, analysis reports for the two evaluated clustering algorithms are shown on the screen, including HS and AMI values, top k (k==10 by default) words per cluster and Cluster ID with PMIDs in individual cluster. 
+        Additionally, analysis reports for the two evaluated clustering algorithms are shown on the screen, including HS and AMI values, top N words per cluster and Cluster ID with PMIDs in individual cluster. N==10 by default. 
         
-    c. python main.py -m external -i input_file -n corpus_name 
+    c. python main.py -m external -k N -i input_file -n corpus_name 
      
-     with:  
+     with:
+     
+        -k: number of most frequent tokens in obtained clusters
        
         -i: path to input file, in the same format as unlabeled ground truth corpus
         
         -n: (optional) name of the corpus. If no name is given external_{timestamp} is used. 
-        
+
         Generated reports are available in report/cluster_reports/cöuster_{corpus_name}_{timestamp}_HDBSCAN.csv and report/cluster_reports/cöuster_{corpus_name}_{timestamp}_KMEANS.csv. 
         
 4. Read the report, to be found in report/pubmed_clustering.pdf

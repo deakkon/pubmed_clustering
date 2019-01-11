@@ -39,6 +39,13 @@ if __name__== "__main__":
                         '--name',
                         help='Name of the output file. In case of none, external_timestamp is used. Results are stored in report/results/')
 
+    parser.add_argument(
+                        '-k',
+                        '--nr_tokens',
+                        help='Number of most frequent tokens in individual clusters to show.',
+                        default=10
+            )
+
     parser.add_argument('-fi',
                         '--feature_input',
                         choices=[['title'],
@@ -51,7 +58,6 @@ if __name__== "__main__":
 
 
     args = vars(parser.parse_args())
-    # print(args)
 
     if not args['mode']:
         raise ValueError("No mode parameter supplied. 'train' invokes training and inference on the ground truth data set. test and external invoke inference on test or external dataset respectively.")
@@ -59,6 +65,7 @@ if __name__== "__main__":
     if args['mode'] == "external" and not args['in']:
         raise ValueError("For evalution of an external dataset, make sure a path for an input file is passed.")
 
+    k = int(args['nr_tokens'])
 
     if args['mode'] == 'train':
         gold_data = preprocess_text.get_text(preprocess_text.gold_data_labeled.PMID.values.tolist(), 'gold_text',preprocess_text.gold_data_labeled.Label.values.tolist())
@@ -74,12 +81,12 @@ if __name__== "__main__":
                                         ['title', 'abstract', 'NE']
                                          )
 
-        ex.inference(gold_data, args['feature_input'], "ground_truth", labels=labels_true)
+        ex.inference(gold_data, args['feature_input'], "ground_truth", k, labels=labels_true)
 
     if args['mode'] == 'test':
 
         test_data = preprocess_text.get_text(preprocess_text.test_data.PMID.values.tolist(), 'test_data')
-        ex.inference(test_data, args['feature_input'], "test_set")
+        ex.inference(test_data, args['feature_input'], "test_set", k)
 
     if args['mode'] == 'external':
 
@@ -91,4 +98,4 @@ if __name__== "__main__":
         df = pd.read_csv(args['in'], sep='\t', header=None, names=['PMID'])
 
         data = preprocess_text.get_text(preprocess_text.test_data.PMID.values.tolist(), file_name)
-        ex.inference(data, args['feature_input'], file_name)
+        ex.inference(data, args['feature_input'], file_name, k)

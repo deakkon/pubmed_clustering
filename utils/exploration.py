@@ -302,6 +302,7 @@ class Exploration(BaseEstimator, TransformerMixin):
             df.to_csv('report/results/results.csv', sep='\t')
 
     def cluster_tokens(self, cluster_labels, tokenized_data, k=10):
+        print(k)
 
         cluster_tokens = {}
         headers = []
@@ -333,7 +334,7 @@ class Exploration(BaseEstimator, TransformerMixin):
         df.to_csv(file_path, sep="\t", index=False)
         print("Saved file to {}".format(file_path))
 
-    def inference(self, documents, feature_input, file_name, labels=None):
+    def inference(self, documents, feature_input, file_name, k, labels=None):
 
         if feature_input not in [['title'], ['abstract'], ['title', 'abstract'], ['title', 'NE'], ['title', 'abstract',  'NE']]:
             raise ValueError("feature_input is one of {}".format(feature_input))
@@ -370,7 +371,7 @@ class Exploration(BaseEstimator, TransformerMixin):
             print("AMI:\t",ami_tmp)
 
 
-        self.cluster_tokens(predicted, tokenized_data)
+        self.cluster_tokens(predicted, tokenized_data, k)
         self.cluster_pmids(predicted, [x['pmid'] for x in documents])
         self.save_cluster_info(predicted, [x['pmid'] for x in documents], "clusters_{}_HDBSCAN".format(file_name))
 
@@ -401,6 +402,6 @@ class Exploration(BaseEstimator, TransformerMixin):
             print("Homogenity score:\t",homogenity_tmp)
             print("AMI:\t",ami_tmp)
 
-        self.cluster_tokens(predicted, tokenized_data)
+        self.cluster_tokens(predicted, tokenized_data, k)
         self.cluster_pmids(predicted, [x['pmid'] for x in documents])
         self.save_cluster_info(predicted, [x['pmid'] for x in documents], "clusters_{}_KMEANS".format(file_name))
