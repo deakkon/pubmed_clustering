@@ -59,6 +59,7 @@ Installation steps:
         
         Generated reports are available in report/cluster_reports/cöuster_{corpus_name}_{timestamp}_HDBSCAN.csv and report/cluster_reports/cöuster_{corpus_name}_{timestamp}_KMEANS.csv. 
         
+4. Read the report, to be found in report/pubmed_clustering.pdf
         
     
             
