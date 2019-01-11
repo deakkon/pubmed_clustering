@@ -64,15 +64,15 @@ if __name__== "__main__":
         gold_data = preprocess_text.get_text(preprocess_text.gold_data_labeled.PMID.values.tolist(), 'gold_text',preprocess_text.gold_data_labeled.Label.values.tolist())
         labels_true = preprocess_text.gold_data_labeled.Label.values.tolist()
 
-        # ex.ground_truth_cluster_analysis(gold_data,
-        #                                 labels_true,
-        #                                 ['lsa','tfidf', "lda"],
-        #                                 ['title'],
-        #                                 ['abstract'],
-        #                                 ['title', 'abstract'],
-        #                                 ['title', 'NE'],
-        #                                 ['title', 'abstract', 'NE']
-        #                                  )
+        ex.ground_truth_cluster_analysis(gold_data,
+                                        labels_true,
+                                        ['lsa','tfidf', "lda"],
+                                        ['title'],
+                                        ['abstract'],
+                                        ['title', 'abstract'],
+                                        ['title', 'NE'],
+                                        ['title', 'abstract', 'NE']
+                                         )
 
         ex.inference(gold_data, args['feature_input'], "ground_truth", labels=labels_true)
 
