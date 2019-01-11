@@ -25,14 +25,15 @@ Installation steps:
 
     a. python main.py -m train
             
-         Executves input feature space xploration, traines and serializes seperate HDBSCAN and KMeans for individual input components:['title'],
+         Executves input feature space xploration, traines and serializes seperate HDBSCAN and KMeans for individual input components:     ['title'],
                                  ['abstract'],
                                  ['title', 'abstract'],
                                  ['title', 'NE'],
                                  ['title', 'abstract', 'NE']
                                  
-         For each invidiual input component, ngrams in range frm (1,1) to (1,4) are evaluated. Best performing n-gram is serlized for each input component. 
-                                 
+         For each invidiual input component, ngrams in range frm (1,1) to (1,4) are evaluated. Best performing n-gram is serlized for each input component.
+         
+         
          After training and serialization, results are available:
             I. as a csv file in the folder reports/results/results.csv, where for each input components Homogenity score, Adjustem Mutual Information and inter- and intra-cluster varianc information is stored. 
             II. Visualized with help of tSNE, available in img/
@@ -43,7 +44,7 @@ Installation steps:
             
     b. python main.py -m test  
     
-        Executes inference on the test set (i.e. unlabeled ground truth) with the best perfomring HDBSCAN and K-Means algorthms. ['title', 'abstract', 'NE'] is used as the default input component.s. 
+        Executes inference on the test set (i.e. unlabeled ground truth) with the best perfomring HDBSCAN and K-Means algorthms. ['title', 'abstract', 'NE'] is used as the default input component. 
         
         After inference, the results (same format and content as above) are available in report/cluster_reports/clusters_test_set_HDBSCAN.tsv and report/cluster_reports/clusters_test_set_KMEANS.tsv.
         
