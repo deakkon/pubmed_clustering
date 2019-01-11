@@ -31,7 +31,7 @@ Installation steps:
                                  ['title', 'NE'],
                                  ['title', 'abstract', 'NE']
                                  
-         For each invidiual input component, ngrams in range frm (1,1) to (1,4) are evaluated. Best performing n-gram value is serlized for each component. 
+         For each invidiual input component, ngrams in range frm (1,1) to (1,4) are evaluated. Best performing n-gram is serlized for each input component. 
                                  
          After training and serialization, results are available:
             I. as a csv file in the folder reports/results/results.csv, where for each input components Homogenity score, Adjustem Mutual Information and inter- and intra-cluster varianc information is stored. 
