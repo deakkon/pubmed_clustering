@@ -329,7 +329,7 @@ class Exploration(BaseEstimator, TransformerMixin):
             cluster_labels = cluster_labels.tolist()
 
         file_path = 'report/cluster_reports/{}.tsv'.format(file_name)
-        df = pd.DataFrame([[a,b] for a,b in zip(cluster_labels, original_pmids)], columns=['Cluster ID', 'PMID'])
+        df = pd.DataFrame([[b,a] for a,b in zip(cluster_labels, original_pmids)], columns=['Cluster ID', 'PMID'])
         df.to_csv(file_path, sep="\t", index=False)
         print("Saved file to {}".format(file_path))
 
