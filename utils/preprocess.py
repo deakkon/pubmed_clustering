@@ -13,9 +13,10 @@ from sklearn.feature_selection import SelectPercentile,SelectKBest, chi2, mutual
 from sklearn.decomposition import PCA, TruncatedSVD, LatentDirichletAllocation
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
 from sklearn.preprocessing import StandardScaler
-
+import traceback
 from utils.transformers import TokenizePreprocessor, sentence_tokenize, vectorizer
 
+import time
 import gensim
 from gensim.test.utils import common_dictionary, common_corpus
 from gensim.sklearn_api import HdpTransformer
@@ -62,18 +63,23 @@ class preprocess_text(BaseEstimator, TransformerMixin):
                     data.append(tmp_dict)
 
             else:
-                for pmid in pmids:
+                for pmid in tqdm(pmids, ascii=True, desc="Preparing {} data.".format(file_name), total=len(pmids)):
                     tmp_dict = {
                         k: v for k, v in pp.parse_xml_web(pmid).items() if k in self.keys
                     }
+                    tmp_dict['NE'] = self.get_pubtator(pmid)
                     data.append(tmp_dict)
 
             with open('prepared/data/'+file_name, "wb") as f:
                 pickle.dump(data, f)
 
+        except Exception:
+            traceback.print_exe()
+            input()
+
         return data
 
-    def dummy_tokenizer(self, doc, stop_words=False):
+    def dummy_tokenizer(self, doc, stop_words=True):
         # dummy tokenizer, used when we have pretokenized tekst as it returns the tokenized document(s)
         if stop_words:
             doc = [w for w in doc if not w in self.stop_words]
@@ -95,11 +101,10 @@ class preprocess_text(BaseEstimator, TransformerMixin):
         if feature_selector not in ['chi2', None]:
             raise ValueError("feature_selector must be one of {}".format(['lsa','chi2',None]))
 
-        if feature_selector and vectorizer == 'tfidf':
-            print("Transforming documents and performing feature selection with {}".format(feature_selector))
-        else:
-            print("Transforming documents with no feature selection")
-
+        # if feature_selector and vectorizer == 'tfidf':
+        #     print("Transforming documents and performing feature selection with {}".format(feature_selector))
+        # else:
+        #     print("Transforming documents with no feature selection")
 
         transformed_text = None
         transformer = None
@@ -142,10 +147,13 @@ class preprocess_text(BaseEstimator, TransformerMixin):
         if vectorizer == 'lsa':
             trainData = transformer.fit_transform(trainData)
             # trainData = transformer.fit_transform(trainData)
-            representation=TruncatedSVD(n_components=100, n_iter=1000)
+            n_comp = min(int(0.5*trainData.shape[1]), 150)
+            representation=TruncatedSVD(n_components=n_comp,
+                                        n_iter=1000
+                                    )
 
         if vectorizer == "hdp":
-            raise ValueError("NOT WORKING; REPLACE WITH FUCNTION WHICH EXECUTES GENSIMS HDP!")
+            raise ValueError("NOT IMPLEMENTED!")
 
         transformed_text = representation.fit_transform(trainData)
         # print(transformed_text)
@@ -159,7 +167,10 @@ class preprocess_text(BaseEstimator, TransformerMixin):
         #     tf_feature_names = transformer.get_feature_names()
         #     self.print_top_words(representation, tf_feature_names, 10)
 
-        print('Transformed train data set feature space size:\t {}'.format(transformed_text.shape))
+        # print('Transformed train data set feature space size:\t {}'.format(transformed_text.shape))
+        if not isinstance(transformed_text, np.ndarray):
+            transformed_text = transformed_text.A
+
         return transformed_text, transformer, representation, selector
 
     def print_top_words(self, model, feature_names, n_top_words):
