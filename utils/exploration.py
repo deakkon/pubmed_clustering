@@ -186,6 +186,7 @@ class Exploration(BaseEstimator, TransformerMixin):
             'n_gram':[],
             'homogeneity_score':[],
             'ami':[],
+            'sum': [],
             'cumulative': [],
         }
 
@@ -205,8 +206,11 @@ class Exploration(BaseEstimator, TransformerMixin):
                 }
             }
 
+            cumulative_best = -100
+
             hdbscan_ami = 0
             hdbscan_homogenity = 0
+
 
             kmeans_ami = 0
             kmeans_homogenity = 0
@@ -227,7 +231,7 @@ class Exploration(BaseEstimator, TransformerMixin):
                     #     centroid_matrix = self.get_cluster_info(transformed_text, cluster_indices)
                     # else:
                     centroid_matrix, cumulative_distance = self.get_cluster_info(transformed_text, cluster_indices, method)
-                    # self.visualize_tsne(transformed_text, labels, title, save_figure=False)
+                    self.visualize_tsne(transformed_text, labels, title, save_figure=True)
 
                     ## performance measure
                     # feed transformed_text in to a clustering algorithm
@@ -250,8 +254,10 @@ class Exploration(BaseEstimator, TransformerMixin):
                     results['homogeneity_score'].append(homogenity_tmp)
                     results['ami'].append(ami_tmp)
                     results['cumulative'].append(cumulative_distance)
+                    results['sum'].append(ami_tmp + homogenity_tmp)
 
                     if (ami_tmp + homogenity_tmp) > ( hdbscan_ami + homogenity_tmp):
+                    # if cumulative_distance > cumulative_best:
                         best["hdbscan"]['transformer'] = transformer
                         best["hdbscan"]['selector'] = selector
                         best["hdbscan"]['representation'] = representation
@@ -275,8 +281,10 @@ class Exploration(BaseEstimator, TransformerMixin):
                     results['homogeneity_score'].append(homogenity_tmp)
                     results['ami'].append(ami_tmp)
                     results['cumulative'].append(cumulative_distance)
+                    results['sum'].append(ami_tmp + homogenity_tmp)
 
                     if (ami_tmp+homogenity_tmp) > (kmeans_ami + kmeans_homogenity):
+                    # if cumulative_distance > cumulative_best:
                         best["kmeans"]['transformer'] = transformer
                         best["kmeans"]['selector'] = selector
                         best["kmeans"]['representation'] = representation
@@ -351,6 +359,7 @@ class Exploration(BaseEstimator, TransformerMixin):
             transformed_text = hdbscan_trained['representation'].transform(transformed_text)
 
         # print(hdbscan_trained['clustering'])
+        # print(transformed_text)
         predicted, strengths = hdbscan.prediction.approximate_predict(hdbscan_trained['clustering'], transformed_text)
 
         if labels:
