@@ -23,7 +23,7 @@ mkl-fft
 mkl-random
 morph==0.1.4
 nltk==3.4
-numpy==1.15.4
+numpy==1.22.0
 olefile==0.46
 packaging==18.0
 pandas==0.23.4
